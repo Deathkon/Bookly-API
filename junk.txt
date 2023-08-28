@@ -43,7 +43,7 @@
         // stripe_customer_id
         // total_before_fees
 
-        // instert into users table
+        // insert into users table
 
 api post test with json and also with form data according to mysql column type
 //  columns: first_name, last_name, gender, email, password, and number.
@@ -119,3 +119,48 @@ module.exports = {
         },
 
 };
+
+
+/// api test with json
+/// Business name
+/// name
+/// E-mail
+/// first_name
+/// last_name
+/// Password
+/// Phone Number
+/// Birthday
+/// address
+/// address2
+/// city
+/// state
+/// country
+/// zip
+/// bio
+/// status - publish or Blocked
+/// vendor_commission_amount
+/// vendor_commission_type
+/// role_id - Administrator, Vendor, Customer
+/// email_verified_at - yes or no
+{
+    "name": "test",
+    "first_name": "mr",
+"last_name": "phil",
+    "business_name": "innorios",
+"email": "info@innorios.com",
+"password": "Bookly@123",
+"phone": "25078882222",
+"birthday": "2021-05-05",
+"address": "kigali",
+"address2": "Nyarugenge",
+"city": "kigali",
+"state": "kigali",
+"country": "rwanda",
+"zip": "250",
+"bio": "test",
+"status": "publish",
+"vendor_commission_amount": "10",
+"vendor_commission_type": "default",
+"role_id": "1",
+"email_verified_at": "yes"
+}
