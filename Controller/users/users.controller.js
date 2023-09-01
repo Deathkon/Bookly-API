@@ -1,97 +1,158 @@
-const { create, getUsers, getUserById, updateUser, deleteUser } = require("../../Service/Users/Users.service.js")
-const { genSaltSync, hashSync } = require("bcrypt");
+const bcrypt = require("bcrypt");
+const UsersService = require("../../Service/Users/Users.service.js");
+
+const saltRounds = 12;
 
 module.exports = {
-    createUser: (req, res) => {
-        const body = req.body;
-        const salt = genSaltSync(10);
-        body.password = hashSync(body.password, salt);
-        create(body, (err, results) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({
-                    success: 0,
-                    message: "Database connection error"
-                });
-            }
-            return res.status(200).json({
-                success: 1,
-                data: results
-            });
+  async createUser(req, res) {
+    try {
+      const { business_name,
+        name,
+        email,
+        first_name,
+        last_name,
+        password,
+        phone,
+        birthday,
+        address,
+        address2,
+        city,
+        state,
+        country,
+        zip,
+        bio,
+        status,
+        vendor_commission_amount,
+        vendor_commission_type,
+        role_id,
+        email_verified_at, } = req.body;
 
-        });
-    },
-    getUsers: (req, res) => {
-        getUsers((err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            return res.json({
-                success: 1,
-                data: results
-            });
-        });
-    },
-    getUserById: (req, res) => {
-        const id = req.params.id;
-        getUserById(id, (err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            if (!results) {
-                return res.json({
-                    success: 0,
-                    message: "Record not found"
-                });
-            }
-            return res.json({
-                success: 1,
-                data: results
-            });
-        });
-    },
-    updateUser: (req, res) => {
-        const { id, ...body } = req.body;
-        const salt = genSaltSync(10);
-        body.password = hashSync(body.password, salt);
-        updateUser({ id, ...body }, (err, results) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({
-                    success: 0,
-                    message: "Failed to update user",
-                });
-            }
-            return res.json({
-                success: 1,
-                message: "User updated successfully",
-            });
-        });
-    },
+      const existingUser = await UsersService.checkUserByEmail(email);
 
-    deleteUser: (req, res) => {
-        const { id } = req.body;
-        deleteUser(id, (err, results) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({
-                    success: 0,
-                    message: "Failed to delete user",
-                });
-            }
-            if (!results.affectedRows) {
-                return res.status(404).json({
-                    success: 0,
-                    message: "User not found",
-                });
-            }
-            return res.json({
-                success: 1,
-                message: "User deleted successfully",
-            });
+      if (existingUser) {
+        return res.status(400).json({
+          success: 0,
+          message: "User with the same email already exists",
         });
-    },
+      }
 
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const newUser = await UsersService.create({ business_name,
+        name,
+        email,
+        first_name,
+        last_name,
+        password: hashedPassword,
+        phone,
+        birthday,
+        address,
+        address2,
+        city,
+        state,
+        country,
+        zip,
+        bio,
+        status,
+        vendor_commission_amount,
+        vendor_commission_type,
+        role_id,
+        email_verified_at, });
+
+      return res.status(201).json({
+        success: 1,
+        data: newUser,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: 0,
+        message: "Failed to create user",
+      });
+    }
+  },
+
+  async getUsers(req, res) {
+    try {
+      const users = await UsersService.getUsers();
+      return res.json({
+        success: 1,
+        data: users,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: 0,
+        message: "Failed to fetch users",
+      });
+    }
+  },
+
+  async getUserById(req, res) {
+    try {
+      const id = req.params.id;
+      const user = await UsersService.getUserById(id);
+      if (!user) {
+        return res.status(404).json({
+          success: 0,
+          message: "User not found",
+        });
+      }
+      return res.json({
+        success: 1,
+        data: user,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: 0,
+        message: "Failed to fetch user",
+      });
+    }
+  },
+
+  async updateUser(req, res) {
+    try {
+      const { id, data } = req.body;
+      const updatedUser = await UsersService.updateUser(id, data);
+      if (!updatedUser) {
+        return res.status(404).json({
+          success: 0,
+          message: "User not found",
+        });
+      }
+      return res.json({
+        success: 1,
+        message: "User updated successfully",
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: 0,
+        message: "Failed to update user",
+      });
+    }
+  },
+
+  async deleteUser(req, res) {
+    try {
+      const id = req.params.id;
+      const deletedUser = await UsersService.deleteUser(id);
+      if (deletedUser.changedRows === 0) {
+        return res.status(404).json({
+          success: 0,
+          message: "User not found",
+        });
+      }
+      return res.json({
+        success: 1,
+        message: "User deleted successfully",
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: 0,
+        message: "Failed to delete user",
+      });
+    }
+  },
 };

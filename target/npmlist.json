@@ -1,1 +1,1 @@
-{"version":"1.0.0","name":"bookly","dependencies":{"express":{"version":"4.18.2"}}}
+{"version":"1.0.0","name":"bookly","dependencies":{"bcrypt":{"version":"5.1.1"},"bcryptjs":{"version":"2.4.3"},"crypto":{"version":"1.0.1"},"dotenv":{"version":"16.3.1"},"express":{"version":"4.18.2"},"jsonwebtoken":{"version":"9.0.1"},"mysql":{"version":"2.18.1"},"mysql2":{"version":"3.6.0"},"nodemailer":{"version":"6.9.4"},"passport":{"version":"0.6.0"},"promise":{"version":"8.3.0"},"speakeasy":{"version":"2.0.0"},"winston":{"version":"3.10.0"}}}
