@@ -1,3 +1,7 @@
+'use strict';
+
+require ('dotenv').config();
+
 const db = require("../../config/server");
 const bcrypt = require("bcrypt");
 const createError = require("http-errors");
@@ -8,12 +12,12 @@ const crypto = require("crypto");
 
 // Create a transporter using the default SMTP transport
 const transporter = nodemailer.createTransport({
-  host: "mail.bookly.africa",
-  port: 465,
-  secure: true,
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: process.env.EMAIL_SECURE,
   auth: {
-    user: "noreply@bookly.africa",
-    pass: "9o@&favthI~B",
+    user: process.env.EMAIL_AUTH_USER,
+    pass: process.env.EMAIL_AUTH_PASS,
   },
 });
 //test transport connection configuration
@@ -48,6 +52,7 @@ exports.register = async function (req, res) {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = {
+      name: `${first_name} ${last_name}`, 
       first_name,
       last_name,
       phone,
