@@ -28,14 +28,15 @@ transporter.verify(function (error, success) {
     console.log("Server is ready to take our messages");
   }
 }
-);
+); 
+
 // Registration Section+
 exports.register = async function (req, res) {
   const { first_name, last_name, phone, email, password } = req.body;
   let conn;
   try {
     conn = await db.getConnection();
-    if (!conn) {
+    if (!conn) {npm 
       return res.status(500).json({
         success: 0,
         message: 'Database connection error',
